@@ -1,0 +1,151 @@
+@{
+    ViewBag.Title = "Completar Registro";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Assets/css/login_styles.css" rel="stylesheet" />
+
+<div class="puzzle-container">
+    <div class="puzzle-bg"></div>
+    <div class="scanlines"></div>
+
+    <!-- Piezas de puzzle decorativas -->
+    <div class="puzzle-piece piece-1"></div>
+    <div class="puzzle-piece piece-2"></div>
+    <div class="puzzle-piece piece-3"></div>
+    <div class="puzzle-piece piece-4"></div>
+
+    <div class="game-screen">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="puzzle-header">
+                <div class="main-title">SETUP PROFILE</div>
+            </div>
+
+            <!-- Body -->
+            <div class="puzzle-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="puzzle-alert error">
+                        ERROR: @ViewBag.Error
+                    </div>
+                }
+
+                <!-- Información de conexión -->
+                <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: #1a1a1a; border: 3px solid #71ab93;">
+                    <!-- Email icon pixelado -->
+                    <svg width="24" height="16" viewBox="0 0 24 16" style="margin-bottom: 8px;">
+                        <rect x="0" y="0" width="24" height="16" fill="#d0af73" />
+                        <rect x="2" y="2" width="20" height="12" fill="#000" />
+                        <polygon points="2,2 12,9 22,2" fill="#d0af73" />
+                        <rect x="2" y="2" width="2" height="2" fill="#d0af73" />
+                        <rect x="4" y="4" width="2" height="2" fill="#d0af73" />
+                        <rect x="6" y="6" width="2" height="2" fill="#d0af73" />
+                        <rect x="8" y="8" width="2" height="2" fill="#d0af73" />
+                        <rect x="10" y="9" width="2" height="2" fill="#d0af73" />
+                        <rect x="12" y="9" width="2" height="2" fill="#d0af73" />
+                        <rect x="14" y="8" width="2" height="2" fill="#d0af73" />
+                        <rect x="16" y="6" width="2" height="2" fill="#d0af73" />
+                        <rect x="18" y="4" width="2" height="2" fill="#d0af73" />
+                        <rect x="20" y="2" width="2" height="2" fill="#d0af73" />
+                    </svg>
+                    <div style="font-size: 7px; color: #71ab93; line-height: 1.6;">
+                        CONNECTED AS<br>
+                        <span style="color: #d0af73;">@ViewBag.Email</span>
+                    </div>
+                </div>
+
+                @using (Html.BeginForm("CompleteRegistration", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">USERNAME</label>
+                        <input type="text" id="nombreUsuario" name="nombreUsuario" class="puzzle-input"
+                               placeholder="YOUR GAME NAME"
+                               value="@ViewBag.SuggestedName" required minlength="3">
+                        <div style="font-size: 7px; color: #71ab93; margin-top: 5px;">THIS NAME WILL APPEAR ON LEADERBOARD</div>
+                    </div>
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">PROFILE PHOTO (OPTIONAL)</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/*" style="display: none;">
+                            <button type="button" class="puzzle-btn" id="uploadBtn" style="margin-bottom: 8px;">
+                                <span id="uploadIcon">&gt;</span>
+                                <span id="uploadText">SELECT PHOTO</span>
+                            </button>
+                            <div id="previewContainer" style="display: none; text-align: center; margin-top: 10px;">
+                                <img id="previewImage" style="max-width: 120px; max-height: 120px; border: 3px solid #d0af73; image-rendering: pixelated;" src="" alt="Preview">
+                                <p style="margin: 8px 0 0; font-size: 7px; color: #71ab93;">NEW PHOTO</p>
+                            </div>
+                        </div>
+                        <div style="font-size: 7px; color: #039c98; text-align: center; margin-top: 8px; line-height: 1.6;">
+                            <span>DEFAULT AVATAR WILL BE USED<br>IF NO PHOTO IS UPLOADED</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="puzzle-btn primary">
+                        &gt; START GAME
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Efecto de aparición
+            const box = document.querySelector('.login-box');
+            const pieces = document.querySelectorAll('.puzzle-piece');
+
+            // Animar piezas
+            pieces.forEach((piece, index) => {
+                piece.style.opacity = '0';
+                setTimeout(() => {
+                    piece.style.transition = 'opacity 0.5s ease';
+                    piece.style.opacity = '0.3';
+                }, index * 200);
+            });
+
+            // Preview de imagen
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('fotoPerfil');
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            const uploadIcon = document.getElementById('uploadIcon');
+            const uploadText = document.getElementById('uploadText');
+
+            uploadBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                        uploadIcon.textContent = '✓';
+                        uploadText.textContent = file.name.toUpperCase().substring(0, 15) + (file.name.length > 15 ? '...' : '');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Efecto hover en botones
+            const buttons = document.querySelectorAll('.puzzle-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function () {
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 10);
+                });
+            });
+        });
+    </script>
+}

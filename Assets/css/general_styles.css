@@ -1,0 +1,572 @@
+﻿/* ========================================
+   GAME STYLES - The Match League
+   Hoja de estilos global para todo el proyecto
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ========================================
+   RESET Y CONFIGURACIÓN BASE
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    line-height: 1.6;
+    background: #039c98;
+    color: #fff;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+    /* ========================================
+   FONDO ANIMADO GLOBAL
+   ======================================== */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background-image: repeating-linear-gradient(0deg, transparent, transparent 35px, #000 35px, #000 37px), repeating-linear-gradient(90deg, transparent, transparent 35px, #000 35px, #000 37px);
+        animation: puzzleShift 30s linear infinite;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+@keyframes puzzleShift {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(37px, 37px);
+    }
+}
+
+/* Scanlines effect */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient( 0deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 1px, transparent 1px, transparent 2px );
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* ========================================
+   CONTENEDORES PRINCIPALES
+   ======================================== */
+.container {
+    position: relative;
+    z-index: 1;
+}
+
+.body-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================================
+   NAVEGACIÓN
+   ======================================== */
+.navbar {
+    background: #000 !important;
+    border-bottom: 4px solid #d0af73;
+    font-family: 'Press Start 2P', cursive;
+    position: relative;
+    z-index: 100;
+}
+
+    .navbar .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 30px;
+    }
+
+    .navbar::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: repeating-linear-gradient( 90deg, #d0af73 0, #d0af73 15px, #71ab93 15px, #71ab93 30px );
+    }
+
+.navbar-brand {
+    color: #d0af73 !important;
+    font-size: 12px !important;
+    text-shadow: 2px 2px 0 #000;
+    transition: all 0.2s;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .navbar-brand img {
+        height: 100px;
+        width: auto;
+        image-rendering: pixelated;
+    }
+
+    .navbar-brand:hover {
+        color: #e94e1f !important;
+        transform: translateY(-2px);
+    }
+
+.navbar-collapse {
+    flex-grow: 0 !important;
+}
+
+.navbar-nav {
+    flex-direction: row;
+    margin-left: auto;
+    align-items: center;
+}
+
+    .navbar-nav li {
+        list-style: none;
+        margin-left: 10px;
+    }
+
+.nav-link {
+    color: #fff !important;
+    background: #e94e1f;
+    font-size: 9px !important;
+    padding: 10px 20px !important;
+    transition: all 0.2s;
+    border: 3px solid #d0af73;
+    display: inline-block;
+    box-shadow: 0 3px 0 #a03517;
+    white-space: nowrap;
+}
+
+    .nav-link:hover {
+        background: #ff6a3d;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 0 #a03517;
+    }
+
+    .nav-link:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 0 #a03517;
+    }
+
+.navbar-toggler {
+    border: 2px solid #d0af73 !important;
+    padding: 8px 10px;
+}
+
+.navbar-toggler-icon {
+    width: 20px;
+    height: 20px;
+    background-image: none;
+    position: relative;
+    display: block;
+}
+
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after,
+    .navbar-toggler-icon span {
+        content: '';
+        display: block;
+        height: 3px;
+        background: #d0af73;
+        margin: 4px 0;
+    }
+
+/* Responsive navbar */
+@media (max-width: 576px) {
+    .navbar .container {
+        padding: 0 15px;
+    }
+
+    .navbar-brand img {
+        height: 40px; /* Cambia este valor */
+        width: auto;
+    }
+
+    .navbar-collapse {
+        margin-top: 15px;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+        .navbar-nav li {
+            margin-left: 0;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+    .nav-link {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ========================================
+   TIPOGRAFÍA
+   ======================================== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Press Start 2P', cursive;
+    color: #d0af73;
+    text-shadow: 3px 3px 0 #000;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+h1 {
+    font-size: 18px;
+}
+
+h2 {
+    font-size: 16px;
+}
+
+h3 {
+    font-size: 14px;
+}
+
+h4 {
+    font-size: 12px;
+}
+
+h5, h6 {
+    font-size: 10px;
+}
+
+p {
+    margin-bottom: 15px;
+    line-height: 1.8;
+}
+
+a {
+    color: #71ab93;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+    a:hover {
+        color: #d0af73;
+    }
+
+/* ========================================
+   BOTONES GLOBALES
+   ======================================== */
+.btn, button, input[type="submit"], input[type="button"] {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 12px 20px;
+    border: 4px solid #000;
+    cursor: pointer;
+    transition: all 0.1s;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: bold;
+}
+
+    .btn-primary, button[type="submit"], input[type="submit"] {
+        background: #e94e1f;
+        color: #fff;
+        border-color: #d0af73;
+        box-shadow: 0 4px 0 #a03517;
+    }
+
+        .btn-primary:hover, button[type="submit"]:hover, input[type="submit"]:hover {
+            background: #ff6a3d;
+            transform: translate(-2px, -2px);
+            box-shadow: 0 4px 0 #a03517, -3px -3px 0 #d0af73;
+        }
+
+.btn-secondary {
+    background: #71ab93;
+    color: #000;
+    border-color: #039c98;
+}
+
+    .btn-secondary:hover {
+        background: #8bc4ad;
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0 #000;
+    }
+
+.btn:active, button:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+/* ========================================
+   FORMULARIOS
+   ======================================== */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    color: #d0af73;
+    font-size: 9px;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+    width: 100%;
+    background: #000;
+    border: 3px solid #039c98;
+    color: #d0af73;
+    padding: 12px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #71ab93;
+        box-shadow: 0 0 0 3px rgba(113, 171, 147, 0.3), inset 0 0 10px rgba(113, 171, 147, 0.2);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #333;
+    }
+
+/* ========================================
+   TARJETAS/CAJAS
+   ======================================== */
+.card, .panel, .box {
+    background: #000;
+    border: 6px solid #d0af73;
+    box-shadow: 0 0 0 2px #000, 0 0 0 8px #d0af73, 0 10px 40px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #e94e1f 0%, #d0af73 100%);
+    border-bottom: 4px solid #d0af73;
+    padding: 15px;
+    margin: -20px -20px 20px -20px;
+    font-size: 12px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+}
+
+/* ========================================
+   TABLAS
+   ======================================== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 4px solid #d0af73;
+    background: #000;
+    margin-bottom: 20px;
+}
+
+th {
+    background: #e94e1f;
+    color: #fff;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 3px solid #d0af73;
+    font-size: 9px;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 2px solid #333;
+    color: #d0af73;
+    font-size: 9px;
+}
+
+tr:hover {
+    background: rgba(113, 171, 147, 0.1);
+}
+
+/* ========================================
+   ALERTAS/MENSAJES
+   ======================================== */
+.alert {
+    border: 3px solid;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 9px;
+    line-height: 1.8;
+}
+
+.alert-success {
+    border-color: #71ab93;
+    background: rgba(113, 171, 147, 0.1);
+    color: #71ab93;
+}
+
+.alert-error,
+.alert-danger {
+    border-color: #e94e1f;
+    background: rgba(233, 78, 31, 0.1);
+    color: #e94e1f;
+}
+
+.alert-warning {
+    border-color: #d0af73;
+    background: rgba(208, 175, 115, 0.1);
+    color: #d0af73;
+}
+
+.alert-info {
+    border-color: #039c98;
+    background: rgba(3, 156, 152, 0.1);
+    color: #039c98;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+footer {
+    background: #000;
+    border-top: 6px solid #039c98;
+    padding: 20px;
+    text-align: center;
+    font-size: 8px;
+    color: #71ab93;
+    margin-top: 40px;
+    position: relative;
+}
+
+    footer::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: repeating-linear-gradient( 90deg, #71ab93 0, #71ab93 15px, #039c98 15px, #039c98 30px );
+    }
+
+    footer a {
+        color: #e94e1f;
+    }
+
+        footer a:hover {
+            color: #d0af73;
+        }
+
+/* ========================================
+   UTILIDADES
+   ======================================== */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.pt-20 {
+    padding-top: 20px;
+}
+
+.pb-20 {
+    padding-bottom: 20px;
+}
+
+.pixel-border {
+    border: 4px solid #d0af73;
+    padding: 15px;
+}
+
+/* ========================================
+   ANIMACIONES GLOBALES
+   ======================================== */
+@keyframes blink {
+    0%, 49% {
+        opacity: 1;
+    }
+
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.blink {
+    animation: blink 1.5s infinite;
+}
+
+.float {
+    animation: float 2s ease-in-out infinite;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    body {
+        font-size: 9px;
+    }
+
+    h1 {
+        font-size: 14px;
+    }
+
+    h2 {
+        font-size: 12px;
+    }
+
+    h3 {
+        font-size: 11px;
+    }
+
+    .navbar-brand {
+        font-size: 10px !important;
+    }
+
+    .card, .panel, .box {
+        padding: 15px;
+    }
+}

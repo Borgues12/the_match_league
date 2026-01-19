@@ -1,0 +1,115 @@
+@{
+    ViewBag.Title = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Assets/css/login_styles.css" rel="stylesheet" />
+
+<div class="puzzle-container">
+    <div class="puzzle-bg"></div>
+    <div class="scanlines"></div>
+
+    <!-- Piezas de puzzle decorativas -->
+    <div class="puzzle-piece piece-1"></div>
+    <div class="puzzle-piece piece-2"></div>
+    <div class="puzzle-piece piece-3"></div>
+    <div class="puzzle-piece piece-4"></div>
+
+    <div class="game-screen">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="puzzle-header">
+                <div class="main-title">MATCH & WIN</div>
+            </div>
+
+            <!-- Body -->
+            <div class="puzzle-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="puzzle-alert error">
+                        ERROR: @ViewBag.Error
+                    </div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="puzzle-alert success">
+                        SUCCESS: @TempData["Success"]
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="puzzle-alert error">
+                        ERROR: @TempData["Error"]
+                    </div>
+                }
+
+                <!-- Google Button -->
+                <a href="@Url.Action("GoogleLogin", "Account")" class="puzzle-btn google">
+                    <img src="~/Assets/images/GooglePixel.png" alt="Google">
+                </a>
+
+                <div class="puzzle-divider">
+                    <span>OR</span>
+                </div>
+
+                <!-- Login Form -->
+                @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">EMAIL</label>
+                        <input type="email" name="email" class="puzzle-input"
+                               placeholder="PLAYER@EMAIL.COM" required>
+                    </div>
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">PASSWORD</label>
+                        <input type="password" name="password" class="puzzle-input"
+                               placeholder="********" required>
+                    </div>
+
+                    <button type="submit" class="puzzle-btn primary">
+                        START GAME
+                    </button>
+                }
+            </div>
+
+            <!-- Footer -->
+            <div class="puzzle-footer">
+                NO ACCOUNT? <a href="@Url.Action("Register", "Account")">REGISTER</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Efecto de aparición
+            const box = document.querySelector('.login-box');
+            const pieces = document.querySelectorAll('.puzzle-piece');
+
+            // Animar piezas
+            pieces.forEach((piece, index) => {
+                piece.style.opacity = '0';
+                setTimeout(() => {
+                    piece.style.transition = 'opacity 0.5s ease';
+                    piece.style.opacity = '0.3';
+                }, index * 200);
+            });
+
+            // Efecto hover en botones
+            const buttons = document.querySelectorAll('.puzzle-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function () {
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 10);
+                });
+            });
+        });
+    </script>
+}

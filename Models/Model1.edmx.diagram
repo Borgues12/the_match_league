@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c1f9fac7756b433287cec976038b5038" Name="Diagram1">
+        <EntityTypeShape EntityType="the_match_leagueModel.IMAGENES_LOTE" Width="1.5" PointX="7.5" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="the_match_leagueModel.LOTES" Width="1.5" PointX="5.25" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="the_match_leagueModel.RESULTADOS_JUEGO" Width="1.5" PointX="10.5" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="the_match_leagueModel.ROLES" Width="1.5" PointX="0.75" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="the_match_leagueModel.sysdiagrams" Width="1.5" PointX="5.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="the_match_leagueModel.USUARIOS" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
+        <AssociationConnector Association="the_match_leagueModel.FK_ImagenesLote_Lotes" ManuallyRouted="false" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Lotes_Admin" ManuallyRouted="false" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Lotes_Usuarios" ManuallyRouted="false" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Resultados_Lotes" ManuallyRouted="false" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Resultados_Usuarios" ManuallyRouted="false" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Usuarios_Roles" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="the_match_leagueModel.TORNEO_PARTICIPANTES" Width="1.5" PointX="13" PointY="0.75" />
+        <EntityTypeShape EntityType="the_match_leagueModel.TORNEOS" Width="1.5" PointX="7.5" PointY="1.5" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Torneos_Lotes" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Participantes_Torneo" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Participantes_Usuario" />
+        <AssociationConnector Association="the_match_leagueModel.FK_Torneos_Admin" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

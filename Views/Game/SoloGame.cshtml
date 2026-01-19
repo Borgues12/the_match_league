@@ -1,0 +1,727 @@
+﻿@{
+    ViewBag.Title = "Solo Game - Match League";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           RESET Y BASE
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            background: #039c98;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+            /* Fondo animado */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0.1;
+                background-image: repeating-linear-gradient(0deg, transparent, transparent 35px, #000 35px, #000 37px), repeating-linear-gradient(90deg, transparent, transparent 35px, #000 35px, #000 37px);
+                animation: gridMove 30s linear infinite;
+                z-index: 0;
+                pointer-events: none;
+            }
+
+        @@keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(37px, 37px);
+            }
+        }
+
+        /* ========================================
+           LAYOUT PRINCIPAL
+           ======================================== */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+        }
+
+        /* ========================================
+           HEADER DEL JUEGO
+           ======================================== */
+        .game-header {
+            background: #000;
+            border: 4px solid #d0af73;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            box-shadow: 4px 4px 0 #71ab93;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .info-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 8px;
+            color: #71ab93;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #d0af73;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        /* ========================================
+           SELECTOR DE DIFICULTAD
+           ======================================== */
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-btn {
+            background: #1a1a1a;
+            color: #71ab93;
+            border: 3px solid #333;
+            padding: 8px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+            .difficulty-btn:hover {
+                border-color: #71ab93;
+            }
+
+            .difficulty-btn.active {
+                background: #71ab93;
+                color: #000;
+                border-color: #d0af73;
+            }
+
+            .difficulty-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        /* ========================================
+           ÁREA DEL TABLERO
+           ======================================== */
+        .game-board-wrapper {
+            flex: 1;
+            background: #000;
+            border: 6px solid #d0af73;
+            box-shadow: 0 0 0 2px #000, 0 0 0 8px #71ab93;
+            overflow: auto;
+            position: relative;
+        }
+
+        .game-board {
+            display: grid;
+            gap: 1px;
+            background: #1a1a1a;
+            padding: 10px;
+            min-width: fit-content;
+        }
+
+        /* ========================================
+           CELDAS DEL GRID
+           ======================================== */
+        .grid-cell {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            position: relative;
+            transition: all 0.15s;
+        }
+
+            .grid-cell:hover {
+                border-color: #444;
+            }
+
+            /* Celda con imagen */
+            .grid-cell.has-image {
+                border-color: #039c98;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+
+            .grid-cell .cell-emoji {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                font-size: inherit;
+            }
+
+            /* Celda seleccionada */
+            .grid-cell.selected {
+                border: 2px solid #d0af73 !important;
+                box-shadow: 0 0 10px #d0af73, inset 0 0 5px rgba(208, 175, 115, 0.3);
+                animation: selectedPulse 0.5s infinite alternate;
+            }
+
+        @@keyframes selectedPulse {
+            0% {
+                box-shadow: 0 0 5px #d0af73;
+            }
+
+            100% {
+                box-shadow: 0 0 15px #d0af73, 0 0 25px rgba(208, 175, 115, 0.5);
+            }
+        }
+
+        /* Celda con match */
+        .grid-cell.matched {
+            animation: matchBoom 0.5s forwards;
+        }
+
+        @@keyframes matchBoom {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Jugador */
+        .grid-cell.player {
+            box-shadow: inset 0 0 0 3px #e94e1f;
+            z-index: 10;
+        }
+
+            .grid-cell.player::after {
+                content: '▼';
+                position: absolute;
+                top: -15px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #e94e1f;
+                font-size: 10px;
+                animation: bounce 0.5s infinite alternate;
+            }
+
+        @@keyframes bounce {
+            0% {
+                top: -15px;
+            }
+
+            100% {
+                top: -10px;
+            }
+        }
+
+        /* ========================================
+           PANEL DE SELECCIÓN
+           ======================================== */
+        .selection-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px; /* ← aquí lo mandas a la derecha */
+            left: auto;
+            transform: none;
+            background: #000;
+            border: 4px solid #d0af73;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .selection-info {
+            color: #71ab93;
+            font-size: 9px;
+        }
+
+        .selection-count {
+            color: #d0af73;
+            font-size: 14px;
+        }
+
+        .btn-match {
+            background: #71ab93;
+            color: #000;
+            border: 3px solid #d0af73;
+            padding: 8px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            cursor: pointer;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: all 0.2s;
+        }
+
+            .btn-match.visible {
+                opacity: 1;
+                pointer-events: auto;
+                animation: glowBtn 1s infinite alternate;
+            }
+
+        @@keyframes glowBtn {
+            0% {
+                box-shadow: 0 0 5px #71ab93;
+            }
+
+            100% {
+                box-shadow: 0 0 15px #71ab93, 0 0 25px rgba(113, 171, 147, 0.5);
+            }
+        }
+
+        .btn-match:hover {
+            background: #8bc4ad;
+        }
+
+        /* ========================================
+           CONTROLES DEL JUEGO
+           ======================================== */
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: #000;
+            border: 4px solid #d0af73;
+            margin-top: 10px;
+        }
+
+        .game-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+            padding: 10px 20px;
+            border: 3px solid;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .btn-start {
+            background: #71ab93;
+            color: #000;
+            border-color: #d0af73;
+            box-shadow: 0 3px 0 #4a8a6f;
+        }
+
+            .btn-start:hover:not(:disabled) {
+                background: #8bc4ad;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 0 #4a8a6f;
+            }
+
+            .btn-start:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-pause {
+            background: #e94e1f;
+            color: #fff;
+            border-color: #d0af73;
+            box-shadow: 0 3px 0 #a03517;
+        }
+
+            .btn-pause:hover {
+                background: #ff6a3d;
+            }
+
+        .btn-restart {
+            background: #039c98;
+            color: #fff;
+            border-color: #71ab93;
+            box-shadow: 0 3px 0 #026866;
+        }
+
+            .btn-restart:hover {
+                background: #04b5b0;
+            }
+
+        .btn-quit {
+            background: #333;
+            color: #888;
+            border-color: #555;
+            box-shadow: 0 3px 0 #222;
+        }
+
+            .btn-quit:hover {
+                background: #444;
+                color: #fff;
+            }
+
+        /* ========================================
+           INSTRUCCIONES
+           ======================================== */
+        .instructions {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 4px solid #d0af73;
+            padding: 20px;
+            z-index: 50;
+            max-width: 400px;
+            text-align: center;
+        }
+
+            .instructions h3 {
+                color: #d0af73;
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+
+            .instructions p {
+                color: #71ab93;
+                font-size: 8px;
+                line-height: 2;
+                margin-bottom: 10px;
+            }
+
+            .instructions .keys {
+                display: flex;
+                justify-content: center;
+                gap: 5px;
+                margin: 10px 0;
+            }
+
+        .key {
+            background: #333;
+            border: 2px solid #d0af73;
+            padding: 8px 12px;
+            color: #d0af73;
+            font-size: 10px;
+        }
+
+        /* ========================================
+           MODAL GAME OVER
+           ======================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+            .modal-overlay.show {
+                display: flex;
+            }
+
+        .modal-content {
+            background: #000;
+            border: 6px solid #d0af73;
+            box-shadow: 0 0 0 2px #000, 0 0 0 8px #71ab93;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .modal-header h2 {
+            color: #d0af73;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 2px solid #333;
+        }
+
+        .result-label {
+            color: #71ab93;
+            font-size: 9px;
+        }
+
+        .result-value {
+            color: #d0af73;
+            font-size: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+            .modal-footer .game-btn {
+                width: 100%;
+            }
+
+        .btn-primary {
+            background: #e94e1f;
+            color: #fff;
+            border-color: #d0af73;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: #888;
+            border-color: #555;
+        }
+
+        /* ========================================
+           PAUSE OVERLAY
+           ======================================== */
+        .pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+        }
+
+            .pause-overlay.show {
+                display: flex;
+            }
+
+        .pause-text {
+            color: #d0af73;
+            font-size: 24px;
+            text-shadow: 3px 3px 0 #000;
+            animation: pauseBlink 1s infinite;
+        }
+
+        @@keyframes pauseBlink {
+            0%, 49% {
+                opacity: 1;
+            }
+
+            50%, 100% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ========================================
+           PUNTOS FLOTANTES
+           ======================================== */
+        .floating-points {
+            position: fixed;
+            color: #71ab93;
+            font-size: 16px;
+            font-family: 'Press Start 2P', cursive;
+            pointer-events: none;
+            animation: floatUp 1s forwards;
+            z-index: 1000;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        @@keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        /* ========================================
+           ERROR MESSAGE
+           ======================================== */
+        .error-message {
+            color: #e94e1f;
+            font-size: 10px;
+            text-align: center;
+            padding: 50px;
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        @@media (max-width: 768px) {
+            .game-info {
+                justify-content: center;
+            }
+
+            .info-box {
+                flex: 1;
+                min-width: 70px;
+            }
+
+            .game-controls {
+                flex-wrap: wrap;
+            }
+
+            .game-btn {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .difficulty-selector {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Header del juego -->
+        <div class="game-header">
+            <div class="game-info">
+                <div class="info-box">
+                    <span class="info-label">PLAYER</span>
+                    <span class="info-value" id="playerName">@(ViewBag.PlayerName ?? "GUEST")</span>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">SCORE</span>
+                    <span class="info-value" id="score">0000</span>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">TIME</span>
+                    <span class="info-value" id="timer">00:00</span>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">REMAINING</span>
+                    <span class="info-value" id="remaining">000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de dificultad -->
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" data-difficulty="easy">EASY (20x20)</button>
+            <button class="difficulty-btn" data-difficulty="medium">MEDIUM (40x40)</button>
+            <button class="difficulty-btn" data-difficulty="hard">HARD (60x60)</button>
+        </div>
+
+        <!-- Tablero del juego -->
+        <div class="game-board-wrapper">
+            <div class="game-board" id="gameBoard">
+                <!-- Instrucciones iniciales -->
+                <div class="instructions" id="instructions">
+                    <h3>🎮 CÓMO JUGAR</h3>
+                    <p>Muévete por el tablero y agrupa imágenes iguales</p>
+                    <div class="keys">
+                        <span class="key">↑</span>
+                        <span class="key">↓</span>
+                        <span class="key">←</span>
+                        <span class="key">→</span>
+                    </div>
+                    <p>ESPACIO = Seleccionar imagen</p>
+                    <p>ENTER = Hacer match (4+ iguales)</p>
+                    <p>ESC = Cancelar selección</p>
+                    <br>
+                    <p>4 = 100pts | 5 = 200pts | 6 = 300pts | 7+ = 400pts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de selección -->
+        <div class="selection-panel">
+            <span class="selection-info">SELECCIONADAS:</span>
+            <span class="selection-count" id="selectionCount">0</span>
+            <button class="btn-match" id="btnMatch" onclick="performMatch()">
+                ✓ MATCH (ENTER)
+            </button>
+        </div>
+
+        <!-- Controles -->
+        <div class="game-controls">
+            <button class="game-btn btn-start" id="btnStart">START GAME</button>
+            <button class="game-btn btn-pause" id="btnPause">PAUSE</button>
+            <button class="game-btn btn-restart" id="btnRestart">RESTART</button>
+            <button class="game-btn btn-quit" onclick="window.location.href='@Url.Action("Index", "Game")'">QUIT</button>
+        </div>
+
+        <!-- Overlay de Pausa -->
+        <div class="pause-overlay" id="pauseOverlay">
+            <span class="pause-text">⏸️ PAUSED </span>
+            <span class="pause-text">"H" para continuar...</span>
+        </div>
+
+        <!-- Modal de Game Over -->
+        <div class="modal-overlay" id="modalGameOver">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🏆 GAME OVER</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="result-item">
+                        <span class="result-label">FINAL SCORE:</span>
+                        <span class="result-value" id="finalScore">0000</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">TIME:</span>
+                        <span class="result-value" id="finalTime">00:00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">CLEARED:</span>
+                        <span class="result-value" id="finalCleared">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">REMAINING:</span>
+                        <span class="result-value" id="finalRemaining">0</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="game-btn btn-primary" id="btnPlayAgain">PLAY AGAIN</button>
+                    <button class="game-btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "Game")'">BACK TO MENU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/js/game.js"></script>
+</body>
+</html>

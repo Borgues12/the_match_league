@@ -1,0 +1,236 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear Torneo - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="~/Assets/css/admin_styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="admin-container">
+        @Html.Partial("_AdminSidebar")
+
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title">
+                    <h1>🏆 Crear Nuevo Torneo</h1>
+                    <p>Configura un nuevo campeonato para los jugadores</p>
+                </div>
+                <a href="@Url.Action("Torneos", "Admin")" class="btn-secondary">
+                    ← Volver a Torneos
+                </a>
+            </header>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-error">⚠️ @ViewBag.Error</div>
+            }
+
+            <div class="form-container">
+                @using (Html.BeginForm("TorneoCrear", "Admin", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>📝 Información del Torneo</h2>
+                        </div>
+                        
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label for="nombre">Nombre del Torneo *</label>
+                                <input type="text" id="nombre" name="nombre" class="form-control" 
+                                       placeholder="Ej: Campeonato de Enero 2025" required />
+                                <span class="form-hint">Este nombre será visible para todos los jugadores</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="idLote">Lote de Imágenes *</label>
+                                @Html.DropDownList("idLote", (SelectList)ViewBag.Lotes, "-- Seleccionar Lote --", new { @class = "form-control", required = "required" })
+                                <span class="form-hint">Las imágenes que se usarán en el juego</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxJugadores">Máximo de Jugadores</label>
+                                <input type="number" id="maxJugadores" name="maxJugadores" class="form-control" 
+                                       value="10" min="2" max="50" />
+                                <span class="form-hint">Cantidad máxima de participantes (2-50)</span>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-icon">ℹ️</div>
+                                <div class="info-content">
+                                    <strong>¿Cómo funciona?</strong>
+                                    <p>Al crear el torneo se generará un código único que deberás compartir con los jugadores. Ellos ingresarán ese código para unirse a la sala de espera. Cuando todos estén listos, podrás iniciar el torneo.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-footer">
+                            <a href="@Url.Action("Torneos", "Admin")" class="btn-cancel">Cancelar</a>
+                            <button type="submit" class="btn-submit">
+                                🏆 Crear Torneo
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .btn-secondary {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-container {
+            max-width: 600px;
+        }
+        
+        .form-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .form-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+        }
+        
+        .form-header h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+        
+        .form-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+        
+        .form-control option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        
+        .form-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .info-box {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .info-icon {
+            font-size: 24px;
+        }
+        
+        .info-content strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #00ff88;
+        }
+        
+        .info-content p {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            padding: 20px 25px;
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-cancel {
+            padding: 12px 25px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #888;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .btn-submit {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            border: none;
+            color: #000;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+    </style>
+</body>
+</html>

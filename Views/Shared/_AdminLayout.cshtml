@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="~/Assets/css/admin_styles.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <!-- SIDEBAR SIEMPRE -->
+        @Html.Partial("_AdminSidebar")
+
+        <!-- CONTENIDO VARIABLE -->
+        <main class="main-content">
+            @RenderBody()
+        </main>
+
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

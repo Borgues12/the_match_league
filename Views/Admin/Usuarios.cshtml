@@ -1,0 +1,485 @@
+@model IEnumerable<juego_MVC_bomber.Models.USUARIOS>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Usuarios - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="~/Assets/css/admin_styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="admin-container">
+        <!-- SIDEBAR -->
+        @Html.Partial("_AdminSidebar")
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title">
+                    <h1>Gestión de Usuarios</h1>
+                    <p>Administra los usuarios registrados en el sistema</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Buscar usuario..." class="search-input" />
+                    </div>
+                </div>
+            </header>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success"> @TempData["Success"]</div>
+            }
+
+            <!-- Filtros -->
+            <div class="filters-bar">
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="active">Activos</button>
+                <button class="filter-btn" data-filter="blocked">Bloqueados</button>
+                <button class="filter-btn" data-filter="admin">Admins</button>
+            </div>
+
+            <!-- Tabla de usuarios -->
+            <div class="table-container">
+                <table class="data-table full-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Registro</th>
+                            <th>Último Acceso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in Model)
+                        {
+                            string rowClass = "";
+
+                            if (usuario.Bloqueado)
+                            {
+                                rowClass = "blocked";
+                            }
+                            else if (!usuario.Activo)
+                            {
+                                rowClass = "inactive";
+                            }
+                            else if (usuario.ROLES.Nombre == "ADMIN")
+                            {
+                                rowClass = "admin";
+                            }
+
+
+                            <tr class="user-row @rowClass" data-status="@(usuario.Bloqueado ? "blocked" : usuario.Activo ? "active" : "inactive")" data-role="@usuario.ROLES.Nombre.ToLower()">
+                                <td>
+                                    <div class="user-cell">
+                                        @if (usuario.FotoPerfil != null)
+                                        {
+                                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(usuario.FotoPerfil)" class="user-avatar" />
+                                        }
+                                        else
+                                        {
+                                            <div class="user-avatar-placeholder">👤</div>
+                                        }
+                                        <div class="user-details">
+                                            <span class="user-name">@usuario.Nombre</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@usuario.Email</td>
+                                <td>
+                                    <span class="role-badge @(usuario.ROLES.Nombre == "ADMIN" ? "admin" : "user")">
+                                        @(usuario.ROLES.Nombre == "ADMIN" ? "Admin" : "Usuario")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (usuario.Bloqueado)
+                                    {
+                                        <span class="status-badge blocked">Bloqueado</span>
+                                    }
+                                    else if (usuario.Activo)
+                                    {
+                                        <span class="status-badge active">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge inactive">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="date-text">@usuario.FechaCreacion.ToString("dd/MM/yyyy")</span>
+                                </td>
+                                <td>
+                                    @if (usuario.UltimoAcceso.HasValue)
+                                    {
+                                        <span class="date-text">@usuario.UltimoAcceso.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="date-text muted">Nunca</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="@Url.Action("UsuarioEditar", "Admin", new { id = usuario.IdUsuario })" class="btn-action edit" title="Editar">
+                                            ✏️
+                                        </a>
+                                        @using (Html.BeginForm("UsuarioBloquear", "Admin", new { id = usuario.IdUsuario }, FormMethod.Post, new { style = "display:inline" }))
+                                        {
+                                            <button type="submit" class="btn-action @(usuario.Bloqueado ? "unblock" : "block")" title="@(usuario.Bloqueado ? "Desbloquear" : "Bloquear")">
+                                                @(usuario.Bloqueado ? "🔓" : "🔒")
+                                            </button>
+                                        }
+
+                                        <button type="button"
+                                                class="btn-action delete"
+                                                title="Desactivar usuario"
+                                                onclick="openDeleteModal(@usuario.IdUsuario, '@usuario.Nombre')">
+                                            🚫
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen -->
+            <div class="table-footer">
+                <span>Total: <strong>@Model.Count()</strong> usuarios</span>
+                <span>Activos: <strong>@Model.Count(u => u.Activo && !u.Bloqueado)</strong></span>
+                <span>Bloqueados: <strong>@Model.Count(u => u.Bloqueado)</strong></span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Confirmar Eliminación -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Desactivar usuario</h3>
+            <p>
+                ¿Estás seguro de desactivar a
+                <strong id="modalUserName"></strong>?
+            </p>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+
+                @using (Html.BeginForm("UsuarioEliminar", "Admin", FormMethod.Post, new { id = "deleteForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteUserId" />
+                    <button type="submit" class="btn-confirm">Desactivar</button>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <style>
+        .filters-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+            .filter-btn:hover, .filter-btn.active {
+                background: rgba(0, 255, 136, 0.1);
+                border-color: #00ff88;
+                color: #00ff88;
+            }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            width: 250px;
+            font-family: inherit;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: #00ff88;
+            }
+
+        .table-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .full-table {
+            width: 100%;
+        }
+
+            .full-table th {
+                background: rgba(0, 0, 0, 0.3);
+                padding: 15px;
+                font-size: 12px;
+            }
+
+            .full-table td {
+                padding: 15px;
+                vertical-align: middle;
+            }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-id {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .role-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+            .role-badge.admin {
+                background: rgba(208, 175, 115, 0.2);
+                color: #d0af73;
+            }
+
+            .role-badge.user {
+                background: rgba(102, 126, 234, 0.2);
+                color: #667eea;
+            }
+
+        .date-text {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+            .date-text.muted {
+                color: #666;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+            .btn-action.view {
+                background: rgba(102, 126, 234, 0.2);
+            }
+
+            .btn-action.edit {
+                background: rgba(0, 255, 136, 0.2);
+            }
+
+            .btn-action.block {
+                background: rgba(255, 107, 107, 0.2);
+            }
+
+            .btn-action.unblock {
+                background: rgba(0, 255, 136, 0.2);
+            }
+
+            .btn-action:hover {
+                transform: scale(1.1);
+            }
+
+        .table-footer {
+            display: flex;
+            gap: 30px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+
+            .table-footer strong {
+                color: #00ff88;
+            }
+
+        .user-row.hidden {
+            display: none;
+        }
+
+        /* Modal base */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* Caja */
+        .modal-box {
+            background: #1e1e2f;
+            padding: 20px;
+            width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.4);
+            text-align: center;
+            animation: scaleIn .2s ease;
+        }
+
+        .modal-box h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .modal-box p {
+            color: #cfcfe6;
+            font-size: 14px;
+        }
+
+        /* Acciones */
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background: #2f2f45;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            background: #e74c3c;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-confirm:hover {
+            background: #c0392b;
+        }
+
+        /* Animación */
+        @@keyframes scaleIn {
+            from { transform: scale(.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Búsqueda
+            const searchInput = document.getElementById('searchInput');
+            const rows = document.querySelectorAll('.user-row');
+
+            searchInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(query) ? '' : 'none';
+                });
+            });
+
+            // Filtros
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filter = this.dataset.filter;
+                    rows.forEach(row => {
+                        if (filter === 'all') {
+                            row.style.display = '';
+                        } else if (filter === 'admin') {
+                            row.style.display = row.dataset.role === 'admin' ? '' : 'none';
+                        } else {
+                            row.style.display = row.dataset.status === filter ? '' : 'none';
+                        }
+                    });
+                });
+            });
+        });
+
+        function openDeleteModal(userId, userName) {
+            document.getElementById("deleteUserId").value = userId;
+            document.getElementById("modalUserName").innerText = userName;
+            document.getElementById("deleteModal").classList.add("active");
+        }
+
+        function closeDeleteModal() {
+            document.getElementById("deleteModal").classList.remove("active");
+        }
+    </script>
+</body>
+</html>

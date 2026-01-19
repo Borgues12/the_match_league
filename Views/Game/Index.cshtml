@@ -1,0 +1,241 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Welcome - Match League</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="~/Assets/css/welcome_styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="welcome-container">
+        <!-- Fondo animado -->
+        <div class="puzzle-bg"></div>
+        <div class="scanlines"></div>
+
+        <!-- Piezas decorativas -->
+        <div class="puzzle-piece piece-1"></div>
+        <div class="puzzle-piece piece-2"></div>
+        <div class="puzzle-piece piece-3"></div>
+        <div class="puzzle-piece piece-4"></div>
+
+        <!-- ===== PERFIL DE USUARIO (ESQUINA SUPERIOR DERECHA) ===== -->
+        <div class="user-profile" id="userProfile">
+            @if (ViewBag.PlayerPhoto != null)
+            {
+                <img src="@ViewBag.PlayerPhoto" alt="Profile" class="profile-photo" />
+            }
+            else
+            {
+                <div class="profile-photo-placeholder">👤</div>
+            }
+            <div class="profile-info">
+                <div class="profile-name">@ViewBag.PlayerName</div>
+                <div class="profile-status">ONLINE</div>
+            </div>
+        </div>
+
+        <!-- ===== DROPDOWN DEL PERFIL ===== -->
+        <div class="profile-dropdown" id="profileDropdown">
+            <div class="dropdown-header">
+                @if (ViewBag.PlayerPhoto != null)
+                {
+                    <img src="@ViewBag.PlayerPhoto" alt="Profile" class="dropdown-photo" />
+                }
+                else
+                {
+                    <div class="dropdown-photo-placeholder">👤</div>
+                }
+                <div class="dropdown-name">@ViewBag.PlayerName</div>
+                <div class="dropdown-email">@ViewBag.PlayerEmail</div>
+            </div>
+
+            <!-- Estadísticas rápidas -->
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="gamesPlayed">0</div>
+                    <div class="stat-label">GAMES</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="bestScore">0</div>
+                    <div class="stat-label">BEST</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="wins">0</div>
+                    <div class="stat-label">WINS</div>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="@Url.Action("Logout", "Account")" class="logout-link">
+                        <span class="icon">🚪</span> LOGOUT
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="welcome-content">
+            <!-- Header con título del juego -->
+            <div class="game-logo">
+                <div class="logo-text">MATCH LEAGUE</div>
+                <div class="logo-subtitle">PUZZLE CHAMPIONSHIP</div>
+            </div>
+
+            <!-- Caja principal -->
+            <div class="welcome-box">
+                <!-- Header con Avatar -->
+                <div class="box-header">
+                    <div class="header-text">WELCOME PLAYER</div>
+                    <div class="player-name">@ViewBag.PlayerName</div>
+                </div>
+
+                <!-- Cuerpo -->
+                <div class="box-body">
+                    <!-- Descripción del juego -->
+                    <div class="game-description">
+                        <div class="description-title">HOW TO PLAY</div>
+                        <div class="description-text">
+                            MATCH IDENTICAL PAIRS TO SCORE POINTS.
+                            CREATE COMBOS FOR BONUS MULTIPLIERS.
+                            BEAT THE CLOCK AND CLIMB THE LEADERBOARD!
+                        </div>
+                    </div>
+
+                    <!-- Divisor -->
+                    <div class="mode-divider">
+                        <span>SELECT GAME MODE</span>
+                    </div>
+
+                    <!-- Opciones de juego -->
+                    <div class="game-modes">
+                        <!-- Modo Solo -->
+                        <a href="@Url.Action("SoloGame", "Game")" class="mode-card solo-mode">
+                            <div class="mode-icon">▶</div>
+                            <div class="mode-title">SOLO MODE</div>
+                            <div class="mode-description">
+                                Practice and improve your skills.
+                                No time limits, play at your pace.
+                            </div>
+                            <div class="mode-button">
+                                <span class="arrow">&gt;</span> START SOLO
+                            </div>
+                        </a>
+
+                        <!-- Modo Campeonato -->
+                        <a href="#" class="mode-card championship-mode">
+                            <div class="mode-icon">★</div>
+                            <div class="mode-title">CHAMPIONSHIP</div>
+                            <div class="mode-description">
+                                Compete against other players.
+                                Climb the rankings and win prizes!
+                            </div>
+                            <div class="mode-button championship-btn">
+                                <span class="arrow">&gt;</span> JOIN CHAMPIONSHIP
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="box-footer">
+                    <a href="@Url.Action("Profile", "Account")" class="footer-link">VIEW PROFILE</a>
+                    <span class="footer-separator">|</span>
+                    <a href="@Url.Action("Leaderboard", "Game")" class="footer-link">LEADERBOARD</a>
+                    <span class="footer-separator">|</span>
+                    <a href="@Url.Action("Logout", "Account")" class="footer-link">LOGOUT</a>
+                </div>
+            </div>
+
+            <!-- Créditos -->
+            <div class="credits">
+                PRESS START TO BEGIN YOUR ADVENTURE
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ===== TOGGLE DEL DROPDOWN =====
+            const userProfile = document.getElementById('userProfile');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            userProfile.addEventListener('click', function (e) {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+
+            // Cerrar dropdown al hacer clic fuera
+            document.addEventListener('click', function (e) {
+                if (!profileDropdown.contains(e.target) && !userProfile.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+
+            // ===== ANIMACIONES DE ENTRADA =====
+            const logo = document.querySelector('.game-logo');
+            const box = document.querySelector('.welcome-box');
+            const pieces = document.querySelectorAll('.puzzle-piece');
+            const profile = document.querySelector('.user-profile');
+
+            // Animación del perfil
+            profile.style.opacity = '0';
+            profile.style.transform = 'translateX(50px)';
+            setTimeout(() => {
+                profile.style.transition = 'all 0.5s ease';
+                profile.style.opacity = '1';
+                profile.style.transform = 'translateX(0)';
+            }, 200);
+
+            // Animación del logo
+            logo.style.opacity = '0';
+            logo.style.transform = 'translateY(-30px)';
+            setTimeout(() => {
+                logo.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                logo.style.opacity = '1';
+                logo.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Animación de la caja
+            box.style.opacity = '0';
+            box.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                box.style.transition = 'all 0.6s ease';
+                box.style.opacity = '1';
+                box.style.transform = 'scale(1)';
+            }, 400);
+
+            // Animar piezas
+            pieces.forEach((piece, index) => {
+                piece.style.opacity = '0';
+                setTimeout(() => {
+                    piece.style.transition = 'opacity 0.5s ease';
+                    piece.style.opacity = '0.3';
+                }, index * 200);
+            });
+
+            // Efecto hover en las cartas (respaldo por si CSS no funciona)
+            const modeCards = document.querySelectorAll('.mode-card');
+            modeCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Efecto de parpadeo en créditos
+            const credits = document.querySelector('.credits');
+            setInterval(() => {
+                credits.style.opacity = credits.style.opacity === '0' ? '1' : '0';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

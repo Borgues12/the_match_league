@@ -1,0 +1,286 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Match League</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="~/Assets/css/admin_styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="admin-container">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="@Url.Action("Index", "Admin")" class="navbar-brand">
+                    <img src="~/Assets/images/logo_juego.png" alt="The Match League">
+                </a>
+                <div class="logo-subtitle">ADMIN PANEL</div>
+            </div>
+
+            <!-- Perfil del Admin -->
+            <div class="admin-profile">
+                @if (ViewBag.AdminPhoto != null)
+                {
+                    <img src="@ViewBag.AdminPhoto" alt="Admin" class="admin-avatar" />
+                }
+                else
+                {
+                    <div class="admin-avatar-placeholder">👑</div>
+                }
+                <div class="admin-info">
+                    <div class="admin-name">@ViewBag.AdminName</div>
+                    <div class="admin-role">ADMINISTRATOR</div>
+                </div>
+            </div>
+
+            <!-- Menú de navegación -->
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Index", "Admin")" class="nav-item active">
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="@Url.Action("Usuarios", "Admin")" class="nav-item">
+                    <span class="nav-text">Usuarios</span>
+                </a>
+                <a href="@Url.Action("Lotes", "Admin")" class="nav-item">
+                    <span class="nav-text">Lotes</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-text">Pendientes</span>
+                    @if (ViewBag.LotesPendientes != null && (int)ViewBag.LotesPendientes > 0)
+                    {
+                        <span class="nav-badge">@ViewBag.LotesPendientes</span>
+                    }
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-text">Torneos</span>
+                </a>
+
+                <div class="nav-divider"></div>
+
+                <a href="@Url.Action("Index", "Game")" class="nav-item">
+                    <span class="nav-text">Ir al Juego</span>
+                </a>
+                <a href="@Url.Action("Logout", "Account")" class="nav-item logout">
+                    <span class="nav-text">Cerrar Sesión</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== CONTENIDO PRINCIPAL ===== -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-title">
+                    <h1>Dashboard</h1>
+                    <p>Bienvenido al panel de administración</p>
+                </div>
+                <div class="header-actions">
+                    <a href="#" class="btn-primary">
+                        Crear Torneo
+                    </a>
+                </div>
+            </header>
+
+            <!-- Alertas -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    ✅ @TempData["Success"]
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-error">
+                    ⚠️ @TempData["Error"]
+                </div>
+            }
+
+            <!-- Estadísticas -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value">@ViewBag.TotalUsuarios</div>
+                        <div class="stat-label">Usuarios Registrados</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value">@ViewBag.TotalLotes</div>
+                        <div class="stat-label">Lotes Aprobados</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value">@ViewBag.LotesPendientes</div>
+                        <div class="stat-label">Lotes Pendientes</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value">@ViewBag.TorneosActivos</div>
+                        <div class="stat-label">Torneos Activos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-value">@ViewBag.PartidasHoy</div>
+                        <div class="stat-label">Partidas Hoy</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contenido en dos columnas -->
+            <div class="dashboard-grid">
+                <!-- Últimos usuarios -->
+                <section class="dashboard-card">
+                    <div class="card-header">
+                        <h2>Últimos Usuarios</h2>
+                        <a href="@Url.Action("Usuarios", "Admin")" class="card-link">Ver todos →</a>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Email</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.UltimosUsuarios != null)
+                                {
+                                    foreach (var usuario in ViewBag.UltimosUsuarios)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="user-cell">
+                                                    @if (usuario.FotoPerfil != null)
+                                                    {
+                                                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(usuario.FotoPerfil)" class="user-mini-avatar" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="user-mini-avatar-placeholder">👤</div>
+                                                    }
+                                                    <span>@usuario.Nombre</span>
+                                                </div>
+                                            </td>
+                                            <td>@usuario.Email</td>
+                                            <td>
+                                                @if (usuario.Bloqueado)
+                                                {
+                                                    <span class="status-badge blocked">Bloqueado</span>
+                                                }
+                                                else if (usuario.Activo)
+                                                {
+                                                    <span class="status-badge active">Activo</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-badge inactive">Inactivo</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Torneos activos -->
+                <section class="dashboard-card">
+                    <div class="card-header">
+                        <h2>Torneos Activos</h2>
+                        <a href="#" class="card-link">Ver todos →</a>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.TorneosRecientes != null && ((IEnumerable<dynamic>)ViewBag.TorneosRecientes).Any())
+                        {
+                            <div class="torneos-list">
+                                @foreach (var torneo in ViewBag.TorneosRecientes)
+                                {
+                                    <div class="torneo-item">
+                                        <div class="torneo-info">
+                                            <div class="torneo-name">@torneo.Nombre</div>
+                                            <div class="torneo-code">Código: <strong>@torneo.Codigo</strong></div>
+                                        </div>
+                                        <div class="torneo-status">
+                                            @if (torneo.Estado == "ESPERA")
+                                            {
+                                                <span class="status-badge waiting">En Espera</span>
+                                            }
+                                            else if (torneo.Estado == "EN_JUEGO")
+                                            {
+                                                <span class="status-badge playing">En Juego</span>
+                                            }
+                                        </div>
+                                        <a href="#" class="btn-small">
+                                            Ver
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <p>No hay torneos activos</p>
+                                <a href="@Url.Action("TorneoCrear", "Admin")" class="btn-primary-small">Crear Torneo</a>
+                            </div>
+                        }
+                    </div>
+                </section>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <section class="quick-actions">
+                <h2>⚡ Acciones Rápidas</h2>
+                <div class="actions-grid">
+                    <a href="@Url.Action("TorneoCrear", "Admin")" class="action-card">
+                        <div class="action-text">Crear Torneo</div>
+                    </a>
+                    <a href="#" class="action-card">
+                        <div class="action-text">Crear Lote</div>
+                    </a>
+                    <a href="#" class="action-card">
+                        <div class="action-text">Revisar Pendientes</div>
+                    </a>
+                    <a href="@Url.Action("Usuarios", "Admin")" class="action-card">
+                        <div class="action-text">Gestionar Usuarios</div>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Marcar nav-item activo según la URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname.toLowerCase();
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href').toLowerCase() === currentPath) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Auto-ocultar alertas
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

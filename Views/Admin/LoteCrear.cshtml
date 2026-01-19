@@ -1,0 +1,605 @@
+﻿@{
+    ViewBag.Title = "Crear Lote";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    /* ===== ESTILOS PARA CREAR LOTE ===== */
+    .create-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #000;
+        color: #71ab93;
+        padding: 10px 15px;
+        border: 3px solid #71ab93;
+        text-decoration: none;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 8px;
+        transition: all 0.1s;
+        box-shadow: 0 3px 0 #026866;
+    }
+
+        .btn-back:hover {
+            background: #71ab93;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #026866;
+        }
+
+    .page-title {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 16px;
+        color: #d0af73;
+        text-shadow: 3px 3px 0 #000;
+    }
+
+    /* Form Card */
+    .form-card {
+        background: #000;
+        border: 6px solid #d0af73;
+        box-shadow: 0 0 0 2px #000, 0 0 0 8px #71ab93, 8px 8px 0 rgba(0,0,0,0.5);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        background: linear-gradient(135deg, #e94e1f 0%, #d0af73 100%);
+        padding: 15px 20px;
+        border-bottom: 4px solid #d0af73;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .form-card-header h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 11px;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+            margin: 0;
+        }
+
+    .form-card-body {
+        padding: 25px;
+    }
+
+    /* Alert Messages */
+    .alert {
+        padding: 15px 20px;
+        border: 4px solid;
+        margin-bottom: 20px;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 9px;
+        line-height: 1.8;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .alert-error {
+        background: rgba(233, 78, 31, 0.2);
+        border-color: #e94e1f;
+        color: #e94e1f;
+    }
+
+    /* Form Group */
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group label {
+            display: block;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+            color: #d0af73;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+            .form-group label .required {
+                color: #e94e1f;
+            }
+
+    .form-control {
+        width: 100%;
+        background: #1a1a1a;
+        border: 3px solid #039c98;
+        color: #d0af73;
+        padding: 12px 15px;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 10px;
+        transition: all 0.2s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #71ab93;
+            box-shadow: 0 0 0 3px rgba(113, 171, 147, 0.3), inset 0 0 10px rgba(113, 171, 147, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #444;
+        }
+
+    .form-hint {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 7px;
+        color: #888;
+        margin-top: 8px;
+        line-height: 1.6;
+    }
+
+    /* Images Upload Section */
+    .images-section {
+        background: #1a1a1a;
+        border: 3px solid #039c98;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .images-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .images-section-title {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 10px;
+        color: #d0af73;
+    }
+
+    .images-counter {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 9px;
+        color: #71ab93;
+        padding: 5px 12px;
+        border: 2px solid #71ab93;
+        background: rgba(113, 171, 147, 0.1);
+    }
+
+        .images-counter.complete {
+            color: #71ab93;
+            border-color: #71ab93;
+            background: rgba(113, 171, 147, 0.2);
+        }
+
+        .images-counter.incomplete {
+            color: #e94e1f;
+            border-color: #e94e1f;
+            background: rgba(233, 78, 31, 0.2);
+        }
+
+    /* Upload Grid */
+    .upload-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+    }
+
+    .upload-slot {
+        position: relative;
+        aspect-ratio: 1;
+        background: #000;
+        border: 3px dashed #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+        .upload-slot:hover {
+            border-color: #71ab93;
+            background: rgba(113, 171, 147, 0.05);
+        }
+
+        .upload-slot.has-image {
+            border-style: solid;
+            border-color: #71ab93;
+        }
+
+            .upload-slot.has-image:hover {
+                border-color: #d0af73;
+            }
+
+        .upload-slot input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+    .upload-placeholder {
+        text-align: center;
+        pointer-events: none;
+    }
+
+        .upload-placeholder .icon {
+            font-size: 30px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .upload-placeholder .number {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: #d0af73;
+            margin-bottom: 5px;
+        }
+
+        .upload-placeholder .text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 6px;
+            color: #666;
+        }
+
+    .upload-preview {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+
+    .upload-slot.has-image .upload-preview {
+        display: block;
+    }
+
+    .upload-slot.has-image .upload-placeholder {
+        display: none;
+    }
+
+    .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        background: #e94e1f;
+        border: 2px solid #d0af73;
+        color: #fff;
+        font-size: 12px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        font-family: 'Press Start 2P', cursive;
+    }
+
+    .upload-slot.has-image .remove-image {
+        display: flex;
+    }
+
+    .remove-image:hover {
+        background: #ff6a3d;
+    }
+
+    /* Upload Info */
+    .upload-info {
+        margin-top: 15px;
+        padding: 15px;
+        background: #000;
+        border: 2px solid #333;
+    }
+
+        .upload-info p {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 7px;
+            color: #888;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .upload-info p:last-child {
+                margin-bottom: 0;
+            }
+
+        .upload-info .icon {
+            font-size: 12px;
+        }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 4px solid #333;
+    }
+
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #333;
+        color: #888;
+        padding: 12px 20px;
+        border: 3px solid #555;
+        text-decoration: none;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 9px;
+        transition: all 0.1s;
+        box-shadow: 0 3px 0 #222;
+    }
+
+        .btn-cancel:hover {
+            background: #444;
+            color: #fff;
+            border-color: #888;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #222;
+        }
+
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #e94e1f;
+        color: #fff;
+        padding: 12px 25px;
+        border: 4px solid #d0af73;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 10px;
+        cursor: pointer;
+        transition: all 0.1s;
+        box-shadow: 0 4px 0 #a03517;
+    }
+
+        .btn-save:hover:not(:disabled) {
+            background: #ff6a3d;
+            transform: translate(-2px, -2px);
+            box-shadow: 0 4px 0 #a03517, -3px -3px 0 #d0af73;
+        }
+
+        .btn-save:disabled {
+            background: #333;
+            border-color: #555;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-save:active:not(:disabled) {
+            transform: translate(0, 0);
+            box-shadow: none;
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .upload-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-cancel, .btn-save {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .upload-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<div class="create-container">
+    <!-- Header -->
+    <div class="page-header">
+        <a href="@Url.Action("Lotes", "Admin")" class="btn-back">
+            <span>◄</span> VOLVER
+        </a>
+        <h1 class="page-title">➕ CREAR LOTE</h1>
+    </div>
+
+    <!-- Mensajes de Error -->
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-error">
+            <span>⚠️</span> @ViewBag.Error
+        </div>
+    }
+
+    <!-- Form Card -->
+    <div class="form-card">
+        <div class="form-card-header">
+            <span style="font-size: 20px;">🎨</span>
+            <h2>NUEVO LOTE DE IMÁGENES</h2>
+        </div>
+
+        <div class="form-card-body">
+            @using (Html.BeginForm("LoteCrear", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "formLote" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- Nombre del Lote -->
+                <div class="form-group">
+                    <label for="nombre">
+                        NOMBRE DEL LOTE <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           id="nombre"
+                           name="nombre"
+                           class="form-control"
+                           placeholder="Ej: Animales, Frutas, Países..."
+                           maxlength="100"
+                           required />
+                    <p class="form-hint">💡 Usa un nombre descriptivo para identificar fácilmente el lote</p>
+                </div>
+
+                <!-- Sección de Imágenes -->
+                <div class="images-section">
+                    <div class="images-section-header">
+                        <span class="images-section-title">🖼️ IMÁGENES DEL LOTE</span>
+                        <span class="images-counter incomplete" id="imagesCounter">0 / 5</span>
+                    </div>
+
+                    <div class="upload-grid">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <div class="upload-slot" id="slot-@i">
+                                <input type="file"
+                                       name="imagenes"
+                                       accept="image/*"
+                                       data-slot="@i"
+                                       onchange="handleImageSelect(this, @i)" />
+                                <div class="upload-placeholder">
+                                    <div class="icon">📷</div>
+                                    <div class="number">@(i + 1)</div>
+                                    <div class="text">CLICK PARA<br />SUBIR</div>
+                                </div>
+                                <img class="upload-preview" id="preview-@i" alt="Preview @(i + 1)" />
+                                <button type="button" class="remove-image" onclick="removeImage(@i)">✕</button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="upload-info">
+                        <p>- Debes subir exactamente 5 imágenes</p>
+                        <p>- Formatos permitidos: JPG, PNG, GIF, WEBP</p>
+                        <p>- Tamaño máximo por imagen: 5MB</p>
+                        <p>- Se recomienda usar imágenes cuadradas</p>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="@Url.Action("Lotes", "Admin")" class="btn-cancel">
+                        <span>✕</span> CANCELAR
+                    </a>
+                    <button type="submit" class="btn-save" id="btnSubmit" disabled>
+                        CREAR LOTE
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>// Array para rastrear qué slots tienen imagen
+        let imageSlots = [false, false, false, false, false];
+        // Array para guardar los archivos
+        let imageFiles = [null, null, null, null, null];
+
+        function handleImageSelect(input, slotIndex) {
+            const file = input.files[0];
+
+            if (file) {
+                // Validar tipo de archivo
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('⚠️ Formato no válido.\n\nUsa: JPG, PNG, GIF o WEBP');
+                    input.value = '';
+                    return;
+                }
+
+                // Validar tamaño (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('⚠️ Imagen muy grande.\n\nTamaño máximo: 5MB');
+                    input.value = '';
+                    return;
+                }
+
+                // Mostrar preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview-' + slotIndex);
+                    const slot = document.getElementById('slot-' + slotIndex);
+
+                    preview.src = e.target.result;
+                    slot.classList.add('has-image');
+
+                    imageSlots[slotIndex] = true;
+                    imageFiles[slotIndex] = file;
+                    updateCounter();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage(slotIndex) {
+            const slot = document.getElementById('slot-' + slotIndex);
+            const preview = document.getElementById('preview-' + slotIndex);
+            const input = slot.querySelector('input[type="file"]');
+
+            // Limpiar
+            preview.src = '';
+            slot.classList.remove('has-image');
+            input.value = '';
+
+            imageSlots[slotIndex] = false;
+            imageFiles[slotIndex] = null;
+            updateCounter();
+        }
+
+        function updateCounter() {
+            const count = imageSlots.filter(Boolean).length;
+            const counter = document.getElementById('imagesCounter');
+            const btnSubmit = document.getElementById('btnSubmit');
+
+            counter.textContent = count + ' / 5';
+
+            if (count === 5) {
+                counter.classList.remove('incomplete');
+                counter.classList.add('complete');
+                btnSubmit.disabled = false;
+            } else {
+                counter.classList.remove('complete');
+                counter.classList.add('incomplete');
+                btnSubmit.disabled = true;
+            }
+        }
+
+        // Validación antes de enviar
+        document.getElementById('formLote').addEventListener('submit', function(e) {
+            const nombre = document.getElementById('nombre').value.trim();
+            const count = imageSlots.filter(Boolean).length;
+
+            if (!nombre) {
+                e.preventDefault();
+                alert('⚠️ Ingresa un nombre para el lote');
+                return;
+            }
+
+            if (count !== 5) {
+                e.preventDefault();
+                alert('⚠️ Debes subir exactamente 5 imágenes\n\nActualmente tienes: ' + count);
+                return;
+            }
+
+            // Mostrar loading
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span> CREANDO...';
+        });</script>
+}

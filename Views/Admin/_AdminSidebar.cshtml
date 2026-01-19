@@ -1,0 +1,53 @@
+﻿<!-- Sidebar del Admin - Partial View -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <a href="@Url.Action("Index", "Admin")" class="navbar-brand">
+            <img src="~/Assets/images/logo_juego.png" alt="The Match League">
+        </a>
+        <div class="logo-subtitle">ADMIN PANEL</div>
+    </div>
+
+    <!-- Perfil del Admin -->
+    <div class="admin-profile">
+        @if (ViewBag.AdminPhoto != null)
+        {
+            <img src="@ViewBag.AdminPhoto" alt="Admin" class="admin-avatar" />
+        }
+        else
+        {
+            <div class="admin-avatar-placeholder">👑</div>
+        }
+        <div class="admin-info">
+            <div class="admin-name">@ViewBag.AdminName</div>
+            <div class="admin-role">ADMINISTRATOR</div>
+        </div>
+    </div>
+
+    <!-- Menú de navegación -->
+    <nav class="sidebar-nav">
+        <a href="@Url.Action("Index", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+            <span class="nav-text">Dashboard</span>
+        </a>
+        <a href="@Url.Action("Usuarios", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString().Contains("Usuario") ? "active" : "")">
+            <span class="nav-text">Usuarios</span>
+        </a>
+        <a href="@Url.Action("Lotes", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Lotes" || ViewContext.RouteData.Values["action"].ToString() == "LoteCrear" ? "active" : "")">
+            <span class="nav-text">Lotes</span>
+        </a>
+        <a href="#" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "LotesPendientes" ? "active" : "")">
+            <span class="nav-text">Pendientes</span>
+        </a>
+        <a href="#" class="nav-item @(ViewContext.RouteData.Values["action"].ToString().Contains("Torneo") ? "active" : "")">
+            <span class="nav-text">Torneos</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <a href="@Url.Action("Index", "Game")" class="nav-item">
+            <span class="nav-text">Ir al Juego</span>
+        </a>
+        <a href="@Url.Action("Logout", "Account")" class="nav-item logout">
+            <span class="nav-text">Cerrar Sesión</span>
+        </a>
+    </nav>
+</aside>

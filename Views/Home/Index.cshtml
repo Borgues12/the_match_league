@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<link href="~/Assets/css/home_styles.css" rel="stylesheet" />
+
+<div class="home-container">
+    <div class="cards-wrapper">
+        <!-- Leaderboard Card -->
+        <div class="game-card">
+            <div class="card-header-custom">
+                <h2>TOP PLAYERS</h2>
+            </div>
+            <div class="card-body-custom">
+                <div class="leaderboard">
+                    <div class="leaderboard-item">
+                        <div class="rank first">1</div>
+                        <div class="player-info">
+                            <div class="player-name">PLAYER_ONE</div>
+                            <div class="player-score">SCORE: 9999</div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank second">2</div>
+                        <div class="player-info">
+                            <div class="player-name">PLAYER_TWO</div>
+                            <div class="player-score">SCORE: 8888</div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank third">3</div>
+                        <div class="player-info">
+                            <div class="player-name">PLAYER_THREE</div>
+                            <div class="player-score">SCORE: 7777</div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank">4</div>
+                        <div class="player-info">
+                            <div class="player-name">PLAYER_FOUR</div>
+                            <div class="player-score">SCORE: 6666</div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="rank">5</div>
+                        <div class="player-info">
+                            <div class="player-name">PLAYER_FIVE</div>
+                            <div class="player-score">SCORE: 5555</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Card -->
+        <div class="game-card">
+            <div class="card-header-custom">
+                <h2>PLAY NOW</h2>
+            </div>
+            <div class="card-body-custom">
+                <div class="game-image-container">
+                    <img src="~/Assets/images/card_nintendo.png" alt="The Match League Game">
+                </div>
+                <a href="@Url.Action("Game", "Play")" class="play-button">
+                    START GAME
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

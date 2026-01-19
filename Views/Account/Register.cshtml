@@ -1,0 +1,167 @@
+@{
+    ViewBag.Title = "Registro";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Assets/css/login_styles.css" rel="stylesheet" />
+
+<div class="puzzle-container">
+    <div class="puzzle-bg"></div>
+    <div class="scanlines"></div>
+
+    <!-- Piezas de puzzle decorativas -->
+    <div class="puzzle-piece piece-1"></div>
+    <div class="puzzle-piece piece-2"></div>
+    <div class="puzzle-piece piece-3"></div>
+    <div class="puzzle-piece piece-4"></div>
+
+    <div class="game-screen">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="puzzle-header">
+                <div class="main-title">CREATE PLAYER</div>
+            </div>
+
+            <!-- Body -->
+            <div class="puzzle-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="puzzle-alert error">
+                        ERROR: @ViewBag.Error
+                    </div>
+                }
+
+                <!-- Google Button -->
+                <a href="@Url.Action("GoogleLogin", "Account")" class="puzzle-btn google">
+                    <img src="~/Assets/images/GooglePixel.png" alt="Google">
+                </a>
+
+                <div class="puzzle-divider">
+                    <span>OR</span>
+                </div>
+
+                <!-- Register Form -->
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">USERNAME</label>
+                        <input type="text" id="nombre" name="nombre" class="puzzle-input"
+                               placeholder="PLAYER NAME" required minlength="3">
+                    </div>
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">EMAIL</label>
+                        <input type="email" id="email" name="email" class="puzzle-input"
+                               placeholder="PLAYER@EMAIL.COM" required>
+                    </div>
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">PASSWORD</label>
+                        <input type="password" id="password" name="password" class="puzzle-input"
+                               placeholder="********" required minlength="6">
+                        <div style="font-size: 7px; color: #71ab93; margin-top: 5px;">MIN 6 CHARACTERS</div>
+                    </div>
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">CONFIRM PASSWORD</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="puzzle-input"
+                               placeholder="********" required>
+                    </div>
+
+                    <div class="puzzle-field">
+                        <label class="puzzle-label">PROFILE PHOTO (OPTIONAL)</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/*" style="display: none;">
+                            <button type="button" class="puzzle-btn" id="uploadBtn" style="margin-bottom: 8px;">
+                                <span id="uploadIcon">></span>
+                                <span id="uploadText">SELECT IMAGE</span>
+                            </button>
+                            <div id="previewContainer" style="display: none; text-align: center; margin-top: 10px;">
+                                <img id="previewImage" style="max-width: 120px; max-height: 120px; border: 3px solid #d0af73; image-rendering: pixelated;" src="" alt="Preview">
+                                <p style="margin: 8px 0 0; font-size: 7px; color: #71ab93;">PREVIEW</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="puzzle-btn primary">
+                        > START ADVENTURE
+                    </button>
+                }
+            </div>
+
+            <!-- Footer -->
+            <div class="puzzle-footer">
+                HAVE ACCOUNT? <a href="@Url.Action("Login", "Account")">LOGIN</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Efecto de aparición
+            const box = document.querySelector('.login-box');
+            const pieces = document.querySelectorAll('.puzzle-piece');
+
+            // Animar piezas
+            pieces.forEach((piece, index) => {
+                piece.style.opacity = '0';
+                setTimeout(() => {
+                    piece.style.transition = 'opacity 0.5s ease';
+                    piece.style.opacity = '0.3';
+                }, index * 200);
+            });
+
+            // Preview de imagen
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('fotoPerfil');
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            const uploadIcon = document.getElementById('uploadIcon');
+            const uploadText = document.getElementById('uploadText');
+
+            uploadBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                        uploadIcon.textContent = '✓';
+                        uploadText.textContent = file.name.toUpperCase().substring(0, 15) + (file.name.length > 15 ? '...' : '');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Validar que las contraseñas coincidan
+            document.querySelector('form').addEventListener('submit', function (e) {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('ERROR: PASSWORDS DO NOT MATCH');
+                }
+            });
+
+            // Efecto hover en botones
+            const buttons = document.querySelectorAll('.puzzle-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function () {
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 10);
+                });
+            });
+        });
+    </script>
+}
