@@ -378,6 +378,15 @@
                            required />
                 </div>
 
+
+                <!-- ROL - AGREGAR ESTO -->
+                <div class="form-group">
+                    <label for="idRol">
+                        ROL <span class="required">*</span>
+                    </label>
+                    @Html.DropDownList("idRol", (SelectList)ViewBag.Roles, new { @class = "form-control" })
+                </div>
+
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <a href="@Url.Action("Usuarios", "Admin")" class="btn-cancel">

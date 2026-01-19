@@ -132,7 +132,7 @@ namespace juego_MVC_bomber.Controllers
         // POST: /Admin/UsuarioEditar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UsuarioEditar(int id, string nombre, HttpPostedFileBase fotoPerfil)
+        public ActionResult UsuarioEditar(int id, string nombre, int idRol, HttpPostedFileBase fotoPerfil)
         {
             var usuario = db.USUARIOS.Find(id);
             if (usuario == null)
@@ -141,6 +141,7 @@ namespace juego_MVC_bomber.Controllers
             }
 
             usuario.Nombre = nombre;
+            usuario.IdRol = idRol;
 
             // Actualizar foto si se subió una nueva
             if (fotoPerfil != null && fotoPerfil.ContentLength > 0)
