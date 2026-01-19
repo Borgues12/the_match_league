@@ -61,7 +61,7 @@
                 <div class="game-image-container">
                     <img src="~/Assets/images/card_nintendo.png" alt="The Match League Game">
                 </div>
-                <a href="@Url.Action("Game", "Play")" class="play-button">
+                <a href="@Html.ActionLink("LOGIN", "Login", "Account", new { area = "" }, new { @class = "nav-link" })" class="play-button">
                     START GAME
                 </a>
             </div>
