@@ -383,23 +383,60 @@ namespace juego_MVC_bomber.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LoteEliminar(int id)
         {
-            var lote = db.LOTES
-                .Include(l => l.IMAGENES_LOTE)
-                .FirstOrDefault(l => l.IdLote == id);
-
-            if (lote != null && !lote.EsDefault)
+            try
             {
-                // Eliminar carpeta de imágenes
-                string carpetaLote = Server.MapPath($"~/Uploads/Lotes/{lote.IdLote}");
-                if (Directory.Exists(carpetaLote))
+                var lote = db.LOTES.Find(id);
+
+                if (lote == null)
                 {
-                    try { Directory.Delete(carpetaLote, true); } catch { }
+                    TempData["Error"] = "Lote no encontrado";
+                    return RedirectToAction("Lotes");
                 }
 
+                if (lote.EsDefault)
+                {
+                    TempData["Error"] = "No se puede eliminar el lote por defecto";
+                    return RedirectToAction("Lotes");
+                }
+
+                // Verificar si está en uso por algún torneo
+                bool enUso = db.TORNEOS.Any(t => t.IdLote == id);
+                if (enUso)
+                {
+                    TempData["Error"] = "No se puede eliminar: el lote está siendo usado en un torneo";
+                    return RedirectToAction("Lotes");
+                }
+
+                // PRIMERO eliminar las imágenes de la base de datos
+                var imagenesLote = db.IMAGENES_LOTE.Where(i => i.IdLote == id).ToList();
+                foreach (var img in imagenesLote)
+                {
+                    db.IMAGENES_LOTE.Remove(img);
+                }
+                db.SaveChanges();
+
+                // LUEGO eliminar el lote
                 db.LOTES.Remove(lote);
                 db.SaveChanges();
+
+                // Intentar eliminar carpeta física
+                try
+                {
+                    string carpetaLote = Server.MapPath($"~/Uploads/Lotes/{id}");
+                    if (Directory.Exists(carpetaLote))
+                    {
+                        Directory.Delete(carpetaLote, true);
+                    }
+                }
+                catch { /* Ignorar errores de archivos */ }
+
                 TempData["Success"] = "Lote eliminado correctamente";
             }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error al eliminar: " + ex.Message;
+            }
+
             return RedirectToAction("Lotes");
         }
 
